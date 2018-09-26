@@ -55,3 +55,6 @@ def preprocess(df, enc=False, drop_rates=False):
     X = np.concatenate([X_numeric_scaled, X_io_scaled, X_binary], 1)
 
     return csr_matrix(X), y, X_cols
+
+
+
