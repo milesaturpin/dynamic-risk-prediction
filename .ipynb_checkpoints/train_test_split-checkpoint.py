@@ -27,7 +27,6 @@ def resolve(pat):
     return pd.Series([pat.iloc[0,0], label], index=['mrn', 'any_sbo_surg_enc'])
 
 def train_val_test(sbo, seed):
-    print(sbo)
     print("Number of encounters:" + str(sbo.reset_index().mrn.nunique()))
     print("Number of patients:" + str(sbo.reset_index().id.nunique()))
 

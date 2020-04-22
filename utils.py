@@ -6,16 +6,41 @@ import pandas as pd
 import re
 import json
 
-def generate_col_dict(cols):
+def generate_suffix_dict(df):
     """
     Returns a dictionary endings paired with column names
-    with that ending. Used for indexing.
+    with that suffix. Used for indexing.
 
     e.g. ['apple_enc', '2_enc', 'toast_arg', 'ahh_arg'] ->
     {'arg': ['toast_arg', 'ahh_arg'], 'enc': ['apple_enc', '2_enc']}
     """
-    ends = set([re.search('(?<=_)[a-z|0-9]*$', col)[0] for col in cols])
-    return {end: [col for col in cols if re.search(f'_{end}$', col)] for end in ends}
+    endings = set([re.search('(?<=_)[a-z|0-9]*$', col).group() for col in df])
+    return {end: [col for col in df if re.search('_{}$'.format(end), col)] for end in endings}
+
+def generate_prefix_dict(df):
+    """
+    Returns a dictionary endings paired with column names
+    with that prefix. Used for indexing.
+
+    e.g. ['apple_enc', 'apple_2', 'arg_toast', 'arg_ahh'] ->
+    {'apple': ['apple_enc', 'apple_2'], 'arg': ['arg_toast', 'arg_ahh']}
+    """
+    starts = set([re.search('^[a-z]*(?=\d|_)', col).group() for col in df])
+    return {start: [col for col in df if re.search('^{}(\d|_)'.format(start), col)] for start in starts}
+
+def generate_midfix_dict(df):
+    """
+    Returns a dictionary endings paired with column names
+    with that prefix. Used for indexing.
+
+    e.g. ['apple_enc', 'apple_2', 'arg_toast', 'arg_ahh'] ->
+    {'apple': ['apple_enc', 'apple_2'], 'arg': ['arg_toast', 'arg_ahh']}
+    """
+    #print(set([re.sub('^[a-z|0-9]*_', '', col) for col in df]))
+    mids = set([re.sub('_[a-z|0-9]*$',
+                        '',
+                       re.sub('^[a-z|0-9]*_', '', col)) for col in df])
+    return {mid: [col for col in df if re.search(mid, col)] for mid in mids}
 
 def to_json(some_dict, file_path):
     """
